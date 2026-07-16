@@ -453,7 +453,14 @@
   </footer>
 
   <script>
-    // 自动从 app-update.json 读取最新版本号
+    // 固定 APK 直接下载链接（GitHub Release latest 自动重定向到最新版本）
+    const APK_DOWNLOAD_URL = 'https://github.com/xdbzys/gaokao-vocab/releases/latest/download/app-debug.apk';
+    const btn1 = document.getElementById('downloadBtn');
+    const btn2 = document.getElementById('downloadBtn2');
+    if (btn1) btn1.href = APK_DOWNLOAD_URL;
+    if (btn2) btn2.href = APK_DOWNLOAD_URL;
+
+    // 自动从 app-update.json 读取最新版本号，并更新按钮文字
     fetch('https://xdbzys.github.io/gaokao-vocab/app-update.json')
       .then(r => r.json())
       .then(d => {
@@ -461,30 +468,12 @@
         if (el && d.version) {
           el.textContent = '当前版本 v' + d.version + ' | Android 5.0+ | 约 1.2 MB';
         }
-      })
-      .catch(() => {});
-
-    // 动态获取 GitHub Release 最新 APK 直接下载链接
-    (async function() {
-      try {
-        const resp = await fetch('https://api.github.com/repos/xdbzys/gaokao-vocab/releases/latest');
-        if (!resp.ok) return;
-        const release = await resp.json();
-        const apkAsset = release.assets?.find(a => a.name.endsWith('.apk'));
-        if (!apkAsset) return;
-        // 更新两个下载按钮为直接下载链接
-        const btn1 = document.getElementById('downloadBtn');
-        const btn2 = document.getElementById('downloadBtn2');
-        if (btn1) btn1.href = apkAsset.browser_download_url;
-        if (btn2) btn2.href = apkAsset.browser_download_url;
         const txt1 = document.getElementById('downloadText');
         const txt2 = document.getElementById('downloadText2');
-        if (txt1) txt1.textContent = '下载 APK（v' + (release.tag_name || '') + '）';
-        if (txt2) txt2.textContent = '立即下载 APK（v' + (release.tag_name || '') + '）';
-      } catch {
-        // API 失败时保持默认链接（跳转到 Release 页面）
-      }
-    })();
+        if (txt1 && d.version) txt1.textContent = '下载 APK（v' + d.version + '）';
+        if (txt2 && d.version) txt2.textContent = '立即下载 APK（v' + d.version + '）';
+      })
+      .catch(() => {});
   </script>
 
 </body>
